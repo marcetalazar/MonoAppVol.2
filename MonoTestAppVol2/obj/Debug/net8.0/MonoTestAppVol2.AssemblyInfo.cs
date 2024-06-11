@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MonoTestAppVol2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17361c51773b079bb27840a8a8af3303627e9bd4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c40839911941c9bc035550362b62fd509813aa1")]
 [assembly: System.Reflection.AssemblyProductAttribute("MonoTestAppVol2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MonoTestAppVol2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
