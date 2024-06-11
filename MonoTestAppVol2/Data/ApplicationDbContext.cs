@@ -9,4 +9,8 @@ public class ApplicationDbContext : IdentityDbContext
         : base(options)
     {
     }
+    public DbSet<VehicleModels.Vehicle> VehicleModels { get; set; }
+    public DbSet<VehicleMake.Make> VehicleMakes { get; set; }
+
 }
+

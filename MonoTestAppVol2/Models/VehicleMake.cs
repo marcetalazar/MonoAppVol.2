@@ -1,9 +1,9 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MonoTestAppVol2.Makes
+namespace VehicleMake
 {
-    public class VehicleMake
+    public class Make
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

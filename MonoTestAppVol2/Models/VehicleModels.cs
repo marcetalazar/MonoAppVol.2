@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using MonoTestAppVol2.Makes;
+using VehicleMake;
 
 namespace VehicleModels
 {
@@ -7,7 +7,7 @@ namespace VehicleModels
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public required MonoTestAppVol2.Makes.VehicleMake VehicleMake { get; set; } 
+        public required VehicleMake.Make VehicleMake { get; set; } 
         public required string Model { get; set; }
         public string? Abrv { get; set; }
 
