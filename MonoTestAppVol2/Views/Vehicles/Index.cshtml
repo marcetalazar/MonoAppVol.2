@@ -5,16 +5,39 @@
 }
 
 <h1>Index</h1>
+<div class="row">
+    <div class="col-md-2">
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("Create")'">Create New</button>
+    </div>
+    <div class="col-md-3">
+        <select id="sortOrder" class="form-control" onchange="location.href='@Url.Action("SortVehicles")?sortOrder=' + this.value">
+            <option value="">Sort by...</option>
+            <option value="Id">Id</option>
+            <option value="Model">Model</option>
+            <option value="Model_desc">Model_desc</option>
+            <option value="Abrv">Abrv</option>
+            <option value="Abrv_desc">Abrv_desc</option>
 
-<p>
-    <a asp-action="Create">Create New</a>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="text" id="searchString" class="form-control" name="searchString" placeholder="Search by model..." />
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("FilterVehicles")?searchString=' + document.getElementById('searchString').value">Search</button>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-danger" onclick="location.href='@Url.Action("Index")'">Show All</button>
+    </div>
+
+</div>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.VehicleMake)
-            </th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>            
             <th>
                 @Html.DisplayNameFor(model => model.Model)
             </th>
@@ -28,7 +51,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.VehicleMake.Id)
+                @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Model)

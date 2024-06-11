@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MonoTestAppVol2.Data;
 using VehicleModels;
+using MonoTestAppVol2.Methods;
+using Microsoft.Data.SqlClient;
+using System.Diagnostics;
+
 
 namespace MonoTestAppVol2.Controllers
 {
@@ -21,9 +25,15 @@ namespace MonoTestAppVol2.Controllers
 
         // GET: Vehicles
         public async Task<IActionResult> Index()
-        {
+
+       
+
+        {   
+            
             var applicationDbContext = _context.VehicleModels.Include(v => v.VehicleMake);
             return View(await applicationDbContext.ToListAsync());
+
+
         }
 
         // GET: Vehicles/Details/5
@@ -82,7 +92,7 @@ namespace MonoTestAppVol2.Controllers
             {
                 return NotFound();
             }
-            ViewData["VehicleMakeId"] = new SelectList(_context.VehicleMakes, "name", "name", vehicle.VehicleMakeId);
+            ViewData["VehicleMakeId"] = new SelectList(_context.VehicleMakes, "Id", "Name", vehicle.VehicleMakeId);
             return View(vehicle);
         }
 
@@ -159,6 +169,28 @@ namespace MonoTestAppVol2.Controllers
         private bool VehicleExists(int id)
         {
             return _context.VehicleModels.Any(e => e.Id == id);
+        }
+        [HttpGet]
+        //Filter Vehicles from the list by Model
+        public async Task<IActionResult> FilterVehicles(string searchString)
+        {
+            FilterSort FilterSort = new FilterSort(_context);
+
+            
+
+            var filterView=await FilterSort.FilterVehicles(searchString);
+            
+            return View("Index", filterView); 
+        }
+        [HttpGet]
+        //Sort Vehicles from the list by 
+        public async Task<IActionResult> SortVehicles(string sortOrder)
+        {
+            FilterSort FilterSort = new FilterSort(_context);
+
+            var sortView = await FilterSort.SortVehicles(sortOrder);
+
+            return View("Index", sortView);
         }
     }
 }
