@@ -68,7 +68,7 @@ namespace MonoTestAppVol2.Methods
             
         }
         //Filter Manufacturers by Name
-        public async Task<List<Make>> FilterManufacturers(string searchString)
+        public async Task<List<Make>> FilterManufacturers(string searchString,int page,int pageSize)
         {
             IQueryable<Make> manufacturers = _context.VehicleMakes;
 
@@ -76,7 +76,7 @@ namespace MonoTestAppVol2.Methods
             {
                manufacturers =manufacturers.Where(v => v.Name.Contains(searchString));
             }
-            return await manufacturers.ToListAsync();
+            return await manufacturers.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
     }
 }

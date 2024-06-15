@@ -9,6 +9,7 @@ using MonoTestAppVol2.Data;
 using VehicleMake;
 using MonoTestAppVol2.Methods;
 using Azure;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 
 namespace MonoTestAppVol2.Controllers
@@ -17,7 +18,8 @@ namespace MonoTestAppVol2.Controllers
     {
         private readonly ApplicationDbContext _context;
         private int pageSize=10;
-        public int page=1;   
+        public int page=1;  
+         
 
         public VehicleMakesController(ApplicationDbContext context)
         {
@@ -25,14 +27,29 @@ namespace MonoTestAppVol2.Controllers
         }
         
         // GET: VehicleMakes
-        public async Task<IActionResult> Index(int page=1)
-        {
-            var applicationDbContext = _context.VehicleMakes;
-            var vehicleMakes = await applicationDbContext.ToListAsync();
-            var paginatedVehicleMakes = Pagination.Pagination.Paginate(vehicleMakes, page, pageSize);
-            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(vehicleMakes, pageSize);
-            return View(paginatedVehicleMakes);
+        // public async Task<IActionResult> Index(int page=1)
+        // {
+        //     var applicationDbContext = _context.VehicleMakes;
 
+        //     var vehicleMakes = await applicationDbContext.ToListAsync();
+        //     FilterSort filterSort = new FilterSort(_context); 
+        //     vehicleMakes = filterSort.SortManufacturers(sortOrder:"id",page,pageSize);
+        
+        //     var paginatedVehicleMakes = Pagination.Pagination.Paginate(vehicleMakes, page, pageSize);
+        //     ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(vehicleMakes, pageSize);
+        //     return View(paginatedVehicleMakes);
+
+        // }
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string sortOrder = "Id")
+        {
+            FilterSort filterSort = new FilterSort(_context); 
+            var vehicleMakes = await filterSort.SortManufacturers(sortOrder, page, pageSize);
+
+            ViewData["NumOfPages"] = (await _context.VehicleMakes.CountAsync() + pageSize - 1) / pageSize;
+            int totalItems = await _context.VehicleMakes.CountAsync();
+            int totalPages = (totalItems + pageSize - 1) / pageSize;
+            ViewBag.SortOrder = sortOrder;
+            return View(vehicleMakes);
         }
 
         // GET: VehicleMakes/Details/5
@@ -185,8 +202,10 @@ namespace MonoTestAppVol2.Controllers
         {
             FilterSort FilterSort = new FilterSort(_context);
 
-            var filterView = await FilterSort.FilterManufacturers(searchString);
-            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(filterView, pageSize);
+            var filterView = await FilterSort.FilterManufacturers(searchString,page,pageSize);
+            int totalItems = filterView.Count();
+            ViewData["NumOfPages"] = (totalItems + pageSize - 1) / pageSize;
+            int totalPages = (totalItems + pageSize - 1) / pageSize;
 
 
             return View("Index", filterView);
