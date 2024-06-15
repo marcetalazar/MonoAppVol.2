@@ -1,14 +1,44 @@
 @model IEnumerable<VehicleMake.Make>
 
+
 @{
     ViewData["Title"] = "Index";
-}
+    int numOfPages = ViewData["NumOfPages"] != null ? (int)ViewData["NumOfPages"] : 0;
+    List<int> NumOfPages = new List<int>();
+    for (int i = 1; i <= numOfPages; i++)
+    {
+        NumOfPages.Add(i);
+    }}
 
 <h1>Index</h1>
+<div class="row">
+    <div class="col-md-2">
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("Create")'">Create New</button>
+    </div>
+    <div class="col-md-3">
+        <select id="sortOrder" class="form-control" onchange="location.href='@Url.Action("SortManufacturers")?sortOrder=' + this.value">
+            <option value="">Sort by...</option>
+            <option value="Id">Id</option>
+            <option value="Id_desc">Id_desc</option>
+            <option value="Name">Name</option>
+            <option value="Name_desc">Name_desc</option>
+            <option value="Abrv">Abrv</option>
+            <option value="Abrv_desc">Abrv_desc</option>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="text" id="searchString" class="form-control" name="searchString" placeholder="Search by model..." />
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("FilterManufacturers")?searchString=' + document.getElementById('searchString').value">Search</button>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-danger" onclick="location.href='@Url.Action("Index")'">Show All</button>
+    </div>
+
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -43,5 +73,19 @@
             </td>
         </tr>
 }
-    </tbody>
+
 </table>
+<div class="row">
+    <div class="col-md-2">
+        <ul class="pagination">
+            
+            @foreach ( var item in NumOfPages)
+            {
+                
+                <a class="page-link" asp-action="Index" asp-route-page="@item">@item</a>  
+            }
+            
+        </ul>
+    </div>
+</div>
+</tbody>

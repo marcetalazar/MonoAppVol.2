@@ -4,6 +4,7 @@ using System.Linq;
 using MonoTestAppVol2.Controllers;
 using VehicleModels;
 using Microsoft.EntityFrameworkCore;
+using VehicleMake;
 
 namespace MonoTestAppVol2.Methods
 {
@@ -16,7 +17,7 @@ namespace MonoTestAppVol2.Methods
             _context = context;
         }
     
-
+    //Filter Manufacturers by Model
     public async Task<List<Vehicle>> FilterVehicles(string searchString)
         {
             IQueryable<Vehicle> vehicles = _context.VehicleModels.Include(v => v.VehicleMake);
@@ -27,26 +28,57 @@ namespace MonoTestAppVol2.Methods
             }
             return await vehicles.ToListAsync();
         }
+    //Sort Manufacturers by Model, Abrv
     public async Task<List<Vehicle>>SortVehicles(string sortOrder)
         {
             IQueryable<Vehicle> vehicles = _context.VehicleModels.Include(v => v.VehicleMake);
-
             vehicles = sortOrder switch
             {
+                //Sorting VehicleModel class    
                 "Model" => vehicles.OrderBy(x => x.Model),
-                "Model_desc" => vehicles.OrderByDescending(x => x.Model),
-                "VehicleMake" => vehicles.OrderBy(x => x.VehicleMake),
-                "VehicleMake_desc" => vehicles.OrderByDescending(x => x.VehicleMake),
-                "abrv" => vehicles.OrderBy(x => x.Abrv),
-                "abrv_desc" => vehicles.OrderByDescending(x => x.Abrv),
+                "Model_desc" => vehicles.OrderByDescending(x => x.Model),                
+                "Abrv" => vehicles.OrderBy(x => x.Abrv),
+                "Abrv_desc" => vehicles.OrderByDescending(x => x.Abrv),
 
+                
+                //default sorting    
                 _ => vehicles.OrderBy(v => v.Id),
             };
             return await vehicles.ToListAsync();
         }
-        
+        //Sort Manufacturers by Id, Name, Abrv
+
+    public async Task<List<Make>>SortManufacturers(string sortOrder,int pageNumber= 1,int pageSize=10)
+        {
+            IQueryable<Make> manufacturers = _context.VehicleMakes;
+
+            manufacturers = sortOrder switch
+            {
+                    //Sorting VehicleMake class
+                    "Id" => manufacturers.OrderBy(x => x.Id),
+                    "Id_desc" => manufacturers.OrderByDescending(x => x.Id),
+                    "Name" => manufacturers.OrderBy(x => x.Name),
+                    "Name_desc" => manufacturers.OrderByDescending(x => x.Name),
+                    "Abrv" => manufacturers.OrderBy(x => x.Abrv),
+                    "Abrv_desc" => manufacturers.OrderByDescending(x => x.Abrv),
+                    //default sorting    
+                    _ => manufacturers.OrderBy(v => v.Id),
+            };
+            return await manufacturers.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            
+        }
+        //Filter Manufacturers by Name
+        public async Task<List<Make>> FilterManufacturers(string searchString)
+        {
+            IQueryable<Make> manufacturers = _context.VehicleMakes;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+               manufacturers =manufacturers.Where(v => v.Name.Contains(searchString));
+            }
+            return await manufacturers.ToListAsync();
+        }
     }
-    
 }
 
 

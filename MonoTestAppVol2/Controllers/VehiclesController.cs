@@ -10,6 +10,7 @@ using VehicleModels;
 using MonoTestAppVol2.Methods;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics;
+using Microsoft.Identity.Client;
 
 
 namespace MonoTestAppVol2.Controllers
@@ -17,10 +18,13 @@ namespace MonoTestAppVol2.Controllers
     public class VehiclesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        
+        public int pageSize = 10;
+        public int page = 1;  
 
         public VehiclesController(ApplicationDbContext context)
         {
-            _context = context;
+            _context = context; 
         }
 
         // GET: Vehicles
@@ -31,7 +35,14 @@ namespace MonoTestAppVol2.Controllers
         {   
             
             var applicationDbContext = _context.VehicleModels.Include(v => v.VehicleMake);
-            return View(await applicationDbContext.ToListAsync());
+            var vehicleModels = await applicationDbContext.ToListAsync();
+            var paginatedVehicleModels = Pagination.Pagination.Paginate(vehicleModels, page, pageSize);
+            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(vehicleModels, pageSize);
+            //return View(await applicationDbContext.ToListAsync());
+{           return View(paginatedVehicleModels);
+    
+    
+}
 
 
         }
@@ -183,7 +194,7 @@ namespace MonoTestAppVol2.Controllers
             return View("Index", filterView); 
         }
         [HttpGet]
-        //Sort Vehicles from the list by 
+        //Sort Vehicles from the list by Id, Model or Abrv	
         public async Task<IActionResult> SortVehicles(string sortOrder)
         {
             FilterSort FilterSort = new FilterSort(_context);

@@ -7,22 +7,32 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MonoTestAppVol2.Data;
 using VehicleMake;
+using MonoTestAppVol2.Methods;
+using Azure;
+
 
 namespace MonoTestAppVol2.Controllers
 {
     public class VehicleMakesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private int pageSize=10;
+        public int page=1;   
 
         public VehicleMakesController(ApplicationDbContext context)
         {
             _context = context;
         }
-
+        
         // GET: VehicleMakes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page=1)
         {
-            return View(await _context.VehicleMakes.ToListAsync());
+            var applicationDbContext = _context.VehicleMakes;
+            var vehicleMakes = await applicationDbContext.ToListAsync();
+            var paginatedVehicleMakes = Pagination.Pagination.Paginate(vehicleMakes, page, pageSize);
+            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(vehicleMakes, pageSize);
+            return View(paginatedVehicleMakes);
+
         }
 
         // GET: VehicleMakes/Details/5
@@ -153,5 +163,48 @@ namespace MonoTestAppVol2.Controllers
         {
             return _context.VehicleMakes.Any(e => e.Id == id);
         }
+       // Sorting Manufacturers
+        public async Task<IActionResult> SortManufacturers(string sortOrder)
+        {
+            var vehicleMakes = await _context.VehicleMakes.ToListAsync();
+
+            FilterSort FilterSort = new FilterSort(_context);
+
+            var sortView = await FilterSort.SortManufacturers(sortOrder);
+
+
+            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(sortView, pageSize);
+
+            var paginatedVehicleMakes =  Pagination.Pagination.Paginate(sortView, page, pageSize);
+
+        
+
+            return View("Index", paginatedVehicleMakes);
+        }
+        public async Task<IActionResult> FilterManufacturers(string searchString)
+        {
+            FilterSort FilterSort = new FilterSort(_context);
+
+            var filterView = await FilterSort.FilterManufacturers(searchString);
+            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(filterView, pageSize);
+
+
+            return View("Index", filterView);
+        }
+
+        /*public async Task<IActionResult> NextPage()
+        {
+            ;
+            return RedirectToAction("Index");
+        }*/
+
+
+
+        /*public async Task<IActionResult> NextPage()
+        {
+            ;
+            return RedirectToAction("Index");
+        }*/
     }
+
 }
