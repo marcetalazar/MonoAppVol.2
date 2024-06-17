@@ -11,6 +11,7 @@ using MonoTestAppVol2.Methods;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 using Microsoft.Identity.Client;
+using System.Windows.Markup;
 
 
 namespace MonoTestAppVol2.Controllers
@@ -28,24 +29,24 @@ namespace MonoTestAppVol2.Controllers
         }
 
         // GET: Vehicles
-        public async Task<IActionResult> Index()
-
-       
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10,string sortOrder = "Id")
 
         {   
+            FilterSort filterSort = new FilterSort(_context);
+            var vehicleModels = await filterSort.SortVehicles(sortOrder, page, pageSize);
             
+            ViewData["NumOfPages"] = (await _context.VehicleModels.CountAsync() + pageSize - 1) / pageSize;
             var applicationDbContext = _context.VehicleModels.Include(v => v.VehicleMake);
-            var vehicleModels = await applicationDbContext.ToListAsync();
-            var paginatedVehicleModels = Pagination.Pagination.Paginate(vehicleModels, page, pageSize);
-            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(vehicleModels, pageSize);
-            //return View(await applicationDbContext.ToListAsync());
-{           return View(paginatedVehicleModels);
+            int totalItems = await _context.VehicleModels.CountAsync();
+            int totalPages = (totalItems + pageSize - 1) / pageSize;
+            ViewBag.SortOrder = sortOrder;
+           
+            return View(vehicleModels);  
     
-    
-}
-
-
         }
+
+
+        
 
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -183,25 +184,31 @@ namespace MonoTestAppVol2.Controllers
         }
         [HttpGet]
         //Filter Vehicles from the list by Model
-        public async Task<IActionResult> FilterVehicles(string searchString)
+        public async Task<IActionResult> FilterVehicles(string searchString,int page=1,int pageSize=10 )
         {
             FilterSort FilterSort = new FilterSort(_context);
 
-            
-
-            var filterView=await FilterSort.FilterVehicles(searchString);
-            
-            return View("Index", filterView); 
+            var filterView=await FilterSort.FilterVehicles(searchString,page,pageSize);
+            int totalItems = filterView.Count();
+            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(filterView, pageSize);
+            int totalPages = (totalItems + pageSize - 1) / pageSize;
+            var paginatedVehicles = Pagination.Pagination.Paginate(filterView, page, pageSize);
+            return View("Index", paginatedVehicles); 
         }
         [HttpGet]
         //Sort Vehicles from the list by Id, Model or Abrv	
         public async Task<IActionResult> SortVehicles(string sortOrder)
         {
+            var SortVehicles = await _context.VehicleModels.ToListAsync();
+
             FilterSort FilterSort = new FilterSort(_context);
 
             var sortView = await FilterSort.SortVehicles(sortOrder);
 
-            return View("Index", sortView);
+            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(sortView, pageSize);
+            var paginatedVehicles = Pagination.Pagination.Paginate(sortView, page, pageSize);   
+
+            return View("Index", paginatedVehicles  );
         }
     }
 }

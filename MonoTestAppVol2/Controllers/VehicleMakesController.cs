@@ -27,19 +27,6 @@ namespace MonoTestAppVol2.Controllers
         }
         
         // GET: VehicleMakes
-        // public async Task<IActionResult> Index(int page=1)
-        // {
-        //     var applicationDbContext = _context.VehicleMakes;
-
-        //     var vehicleMakes = await applicationDbContext.ToListAsync();
-        //     FilterSort filterSort = new FilterSort(_context); 
-        //     vehicleMakes = filterSort.SortManufacturers(sortOrder:"id",page,pageSize);
-        
-        //     var paginatedVehicleMakes = Pagination.Pagination.Paginate(vehicleMakes, page, pageSize);
-        //     ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(vehicleMakes, pageSize);
-        //     return View(paginatedVehicleMakes);
-
-        // }
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string sortOrder = "Id")
         {
             FilterSort filterSort = new FilterSort(_context); 
@@ -198,32 +185,20 @@ namespace MonoTestAppVol2.Controllers
 
             return View("Index", paginatedVehicleMakes);
         }
-        public async Task<IActionResult> FilterManufacturers(string searchString)
+        public async Task<IActionResult> FilterManufacturers(string searchString,int page=1,int pageSize=10)
         {
             FilterSort FilterSort = new FilterSort(_context);
 
             var filterView = await FilterSort.FilterManufacturers(searchString,page,pageSize);
             int totalItems = filterView.Count();
-            ViewData["NumOfPages"] = (totalItems + pageSize - 1) / pageSize;
+            ViewData["NumOfPages"] = Pagination.Pagination.GetNumOfPages(filterView, pageSize);
             int totalPages = (totalItems + pageSize - 1) / pageSize;
+            var paginatedManufacturers = Pagination.Pagination.Paginate(filterView, page, pageSize);
 
 
-            return View("Index", filterView);
+            return View("Index", paginatedManufacturers);
         }
-
-        /*public async Task<IActionResult> NextPage()
-        {
-            ;
-            return RedirectToAction("Index");
-        }*/
-
-
-
-        /*public async Task<IActionResult> NextPage()
-        {
-            ;
-            return RedirectToAction("Index");
-        }*/
+        
     }
 
 }

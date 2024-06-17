@@ -5,6 +5,7 @@ using MonoTestAppVol2.Controllers;
 using VehicleModels;
 using Microsoft.EntityFrameworkCore;
 using VehicleMake;
+using Azure;
 
 namespace MonoTestAppVol2.Methods
 {
@@ -18,7 +19,7 @@ namespace MonoTestAppVol2.Methods
         }
     
     //Filter Manufacturers by Model
-    public async Task<List<Vehicle>> FilterVehicles(string searchString)
+    public async Task<List<Vehicle>> FilterVehicles(string searchString,int page=1,int pageSize=10 )
         {
             IQueryable<Vehicle> vehicles = _context.VehicleModels.Include(v => v.VehicleMake);
 
@@ -29,7 +30,7 @@ namespace MonoTestAppVol2.Methods
             return await vehicles.ToListAsync();
         }
     //Sort Manufacturers by Model, Abrv
-    public async Task<List<Vehicle>>SortVehicles(string sortOrder)
+    public async Task<List<Vehicle>>SortVehicles(string sortOrder,int pageNumber= 1,int pageSize=10)
         {
             IQueryable<Vehicle> vehicles = _context.VehicleModels.Include(v => v.VehicleMake);
             vehicles = sortOrder switch
@@ -44,7 +45,7 @@ namespace MonoTestAppVol2.Methods
                 //default sorting    
                 _ => vehicles.OrderBy(v => v.Id),
             };
-            return await vehicles.ToListAsync();
+            return await vehicles.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
         }
         //Sort Manufacturers by Id, Name, Abrv
 
@@ -68,7 +69,7 @@ namespace MonoTestAppVol2.Methods
             
         }
         //Filter Manufacturers by Name
-        public async Task<List<Make>> FilterManufacturers(string searchString,int page,int pageSize)
+        public async Task<List<Make>> FilterManufacturers(string searchString,int page=1,int pageSize=10)
         {
             IQueryable<Make> manufacturers = _context.VehicleMakes;
 
@@ -76,9 +77,10 @@ namespace MonoTestAppVol2.Methods
             {
                manufacturers =manufacturers.Where(v => v.Name.Contains(searchString));
             }
-            return await manufacturers.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return await manufacturers.ToListAsync();
         }
     }
 }
 
 
+  

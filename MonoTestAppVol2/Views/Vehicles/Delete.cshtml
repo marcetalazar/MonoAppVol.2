@@ -12,22 +12,30 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VehicleMake)
-        </dt>
+            @Html.DisplayNameFor(model => model.Id)
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VehicleMake.Id)
+            @if (Model != null && Model.VehicleMake != null)
+            {
+                @Html.DisplayFor(model => model.VehicleMake.Id)
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Model)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
+            @if (Model != null)
+            {
+                @Html.DisplayFor(model => model.Model)
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Abrv)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Abrv)
+            @if (Model != null)
+            {
+                @Html.DisplayFor(model => model.Abrv)
+            }
         </dd>
     </dl>
     
